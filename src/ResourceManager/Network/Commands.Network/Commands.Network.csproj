@@ -415,6 +415,7 @@
     <Compile Include="VirtualNetworkGateway\GetAzureVirtualNetworkGatewayAdvertisedRouteCommand.cs" />
     <Compile Include="VirtualNetworkGateway\GetAzureVirtualNetworkGatewayBgpPeerStatus.cs" />
     <Compile Include="VirtualNetworkGateway\GetAzureVirtualNetworkGatewayLearnedRouteCommand.cs" />
+    <Compile Include="VirtualNetwork\Subnet\SubnetListMethod.cs" />
     <Compile Include="VirtualNetwork\TestAzurePrivateIPAddressAvailabilityCmdlet.cs" />
     <Compile Include="PublicIpAddress\GetAzurePublicIpAddressCommand.cs" />
     <Compile Include="PublicIpAddress\NewAzurePublicIpAddressCommand.cs" />
@@ -579,6 +580,10 @@
     <Compile Include="VirtualNetwork\GetAzureVirtualNetworkCommand.cs" />
     <Compile Include="VirtualNetwork\NewAzureVirtualNetworkCommand.cs" />
     <Compile Include="VirtualNetwork\VirtualNetworkBaseCmdlet.cs" />
+    <Compile Include="VirtualNetwork\VirtualNetworkListAllMethod.cs" />
+    <Compile Include="VirtualNetwork\VirtualNetworkListAllNextMethod.cs" />
+    <Compile Include="VirtualNetwork\VirtualNetworkListMethod.cs" />
+    <Compile Include="VirtualNetwork\VirtualNetworkListNextMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\Commands.Common.Authentication\Commands.Common.Authentication.csproj">
