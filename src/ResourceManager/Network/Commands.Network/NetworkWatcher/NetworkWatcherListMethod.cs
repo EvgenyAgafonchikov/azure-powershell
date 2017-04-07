@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) Microsoft and contributors.  All rights reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 // Changes to this file may cause incorrect behavior and will be lost if the
 // code is regenerated.
 
-using AutoMapper;
 using Microsoft.Azure.Commands.Network.Models;
 using Microsoft.Azure.Management.Network;
 using Microsoft.Azure.Management.Network.Models;
@@ -28,6 +27,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
+using AutoMapper;
 using MNM = Microsoft.Azure.Management.Network.Models;
 using CNM = Microsoft.Azure.Commands.Network.Models;
 
@@ -35,24 +35,14 @@ namespace Microsoft.Azure.Commands.Network.Automation
 {
 
 
-    [Cmdlet(VerbsCommon.Get, "AzureRmNetworkWatcherPacketCapture", DefaultParameterSetName = "InvokeByDynamicParameters")]
-    public partial class GetAzureRmNetworkWatcherPacketCapture : PacketCaptureBaseCmdlet
+    [Cmdlet(VerbsCommon.Get, "AzureRmNetworkWatcherList", DefaultParameterSetName = "InvokeByDynamicParameters")]
+    public partial class GetAzureRmNetworkWatcherList : NetworkWatcherBaseCmdlet
     {
         [Parameter(
             Mandatory = true,
             ValueFromPipelineByPropertyName = true)]
         [ValidateNotNullOrEmpty]
         public string ResourceGroupName { get; set; }
-        [Parameter(
-            Mandatory = true,
-            ValueFromPipelineByPropertyName = true)]
-        [ValidateNotNullOrEmpty]
-        public string NetworkWatcherName { get; set; }
-        [Parameter(
-            Mandatory = true,
-            ValueFromPipelineByPropertyName = true)]
-        [ValidateNotNullOrEmpty]
-        public string Name { get; set; }
 
 
         public override void Execute()
@@ -60,9 +50,13 @@ namespace Microsoft.Azure.Commands.Network.Automation
             base.Execute();
 
 
-            var vPacketCapture = this.PacketCaptures.Get(ResourceGroupName, NetworkWatcherName, Name);
-            var vPacketCaptureModel = Mapper.Map<CNM.PSPacketCapture>(vPacketCapture);
-            WriteObject(vPacketCaptureModel);
+            var vNetworkWatcherList = this.NetworkWatcherClient.List(ResourceGroupName);
+            foreach (var vNetworkWatcher in vNetworkWatcherList)
+            {
+                var vNetworkWatcherModel = Mapper.Map<CNM.PSNetworkWatcher>(vNetworkWatcher);
+                vNetworkWatcherModel.ResourceGroupName = this.ResourceGroupName;
+                WriteObject(vNetworkWatcherModel);
+            }
         }
     }
 }

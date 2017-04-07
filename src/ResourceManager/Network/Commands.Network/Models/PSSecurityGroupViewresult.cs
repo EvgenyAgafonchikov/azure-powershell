@@ -20,8 +20,9 @@ namespace Microsoft.Azure.Commands.Network.Models
 
     public class PSSecurityGroupViewResult
     {
-        public List<PSSecurityGroupView> NetworkInterfaces { get; set; }
-
+        public List<PSSecurityGroupNetworkInterface> NetworkInterfaces { get; set; }
+        //public List<PSSecurityGroupView> NetworkInterfaces { get; set; }
+        //
         [JsonIgnore]
         public string NetworkInterfacesText
         {

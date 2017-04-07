@@ -144,9 +144,15 @@ namespace Microsoft.Azure.Commands.Network
             // MNM to CNM
             Mapper.CreateMap<MNM.NetworkWatcher, CNM.PSNetworkWatcher>();
 
+            Mapper.CreateMap<CNM.PSSecurityGroupViewResult, MNM.SecurityGroupViewResult>();
+            Mapper.CreateMap<MNM.SecurityGroupViewResult, CNM.PSSecurityGroupViewResult>();
+            Mapper.CreateMap<CNM.PSPacketCapture, MNM.PacketCaptureResult>();
+            Mapper.CreateMap<MNM.PacketCaptureResult, CNM.PSPacketCapture>();
+
             // PacketCapture
             // CNM to MNM
             Mapper.CreateMap<CNM.PSPacketCapture, MNM.PacketCaptureParameters>();
+            Mapper.CreateMap<CNM.PSPacketCapture, MNM.PacketCapture>();
             Mapper.CreateMap<CNM.PSPacketCaptureResult, MNM.PacketCaptureResult>();
             Mapper.CreateMap<CNM.PSStorageLocation, MNM.PacketCaptureStorageLocation>();
             Mapper.CreateMap<CNM.PSPacketCaptureFilter, MNM.PacketCaptureFilter>();
@@ -154,6 +160,7 @@ namespace Microsoft.Azure.Commands.Network
 
             // MNM to CNM
             Mapper.CreateMap<MNM.PacketCaptureParameters, CNM.PSPacketCapture>();
+            Mapper.CreateMap<MNM.PacketCapture, CNM.PSPacketCapture>();
             Mapper.CreateMap<MNM.PacketCaptureResult, CNM.PSPacketCaptureResult>();
             Mapper.CreateMap<MNM.PacketCaptureStorageLocation, CNM.PSStorageLocation>();
             Mapper.CreateMap<MNM.PacketCaptureFilter, CNM.PSPacketCaptureFilter>();

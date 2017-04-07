@@ -185,6 +185,8 @@ CmdletsToExport = 'Add-AzureRmApplicationGatewayAuthenticationCertificate',
                'Stop-AzureRmNetworkWatcherPacketCapture', 
                'Remove-AzureRmNetworkWatcherPacketCapture', 
                'New-AzureRmPacketCaptureFilterConfig', 
+               'Get-AzureRmNetworkWatcherPacketCaptureList',
+               'Get-AzureRmNetworkWatcherPacketCaptureStatus',
                'Get-AzureRmNetworkWatcherTopology', 
                'Get-AzureRmNetworkWatcherSecurityGroupView', 
                'Test-AzureRmNetworkWatcherIPFlow', 
@@ -290,7 +292,10 @@ CmdletsToExport = 'Add-AzureRmApplicationGatewayAuthenticationCertificate',
                'New-AzureRmVirtualNetwork',
                'Get-AzureRmVirtualNetworkGatewayBgpPeerStatus',
                'Get-AzureRmVirtualNetworkGatewayAdvertisedRoute',
-               'Get-AzureRmVirtualNetworkGatewayLearnedRoute'
+               'Get-AzureRmVirtualNetworkGatewayLearnedRoute',
+
+               'Get-AzureRmNetworkWatcherList',
+               'Get-AzureRmNetworkWatcherAllList'
 
 # Variables to export from this module
 # VariablesToExport = @()

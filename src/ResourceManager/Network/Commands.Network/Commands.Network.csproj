@@ -381,6 +381,10 @@
     <Compile Include="NetworkInterface\IpConfiguration\NewAzureNetworkInterfaceIpConfigCommand.cs" />
     <Compile Include="NetworkInterface\IpConfiguration\RemoveAzureNetworkInterfaceIpConfigCommand.cs" />
     <Compile Include="NetworkInterface\IpConfiguration\SetAzureNetworkInterfaceIpConfigCommand.cs" />
+    <Compile Include="NetworkWatcher\NetworkWatcherListAllMethod.cs" />
+    <Compile Include="NetworkWatcher\NetworkWatcherListMethod.cs" />
+    <Compile Include="NetworkWatcher\PacketCapture\PacketCaptureGetStatusMethod.cs" />
+    <Compile Include="NetworkWatcher\PacketCapture\PacketCaptureListMethod.cs" />
     <Compile Include="ProviderWideCmdlets\GetAzureBgpServiceCommunityCommand.cs" />
     <Compile Include="NetworkWatcher\GetAzureNetworkWatcherCommand.cs" />
     <Compile Include="NetworkWatcher\GetAzureNetworkWatcherFlowLogStatusCommand.cs" />
