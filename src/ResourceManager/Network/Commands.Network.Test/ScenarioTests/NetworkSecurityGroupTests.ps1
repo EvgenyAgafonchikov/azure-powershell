@@ -141,7 +141,6 @@ function Test-NetworkSecurityGroup-SecurityRuleCRUD
 
         # Get NetworkSecurityGroup
         $getNsg = Get-AzureRmNetworkSecurityGroup -name $nsgName -ResourceGroupName $rgName
-        
         #verification
         Assert-AreEqual $rgName $getNsg.ResourceGroupName
         Assert-AreEqual $nsgName $getNsg.Name
