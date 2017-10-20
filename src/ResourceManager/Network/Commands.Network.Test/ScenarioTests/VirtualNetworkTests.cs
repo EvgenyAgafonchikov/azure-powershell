@@ -28,37 +28,30 @@ namespace Commands.Network.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestVirtualNetworkCRUD()
+        public void TestVirtualNetworkCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-VirtualNetworkCRUD");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-VirtualNetworkCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestVirtualNetworkCRUDWithDDoSProtection()
+        public void TestVirtualNetworkCRUDAllParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-VirtualNetworkCRUDWithDDoSProtection");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-VirtualNetworkCRUDAllParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestVirtualNetworkSubnetCRUD()
+        public void TestSubnetCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-subnetCRUD");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-SubnetCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestVirtualNetworkPeeringCRUD()
+        public void TestSubnetCRUDAllParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-VirtualNetworkPeeringCRUD");
-        }
-
-        [Fact(Skip = "test is timing out , ahmed salma to fix")]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestResourceNavigationLinksOnSubnetCRUD()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-ResourceNavigationLinksCRUD");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-SubnetCRUDAllParameters");
         }
 
         [Fact]

@@ -16,44 +16,29 @@
 .SYNOPSIS
 Tests creating new simple public networkinterface.
 #>
-function Test-NetworkWatcherCRUD
+function Test-NetworkWatcherCRUDMinimalParameters
 {
     # Setup
     $rgname = Get-ResourceGroupName
-    $nwName = Get-ResourceName
+    # TODO: generate names/values for required resources
     $rglocation = Get-ProviderLocation ResourceManagement
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $location = "westcentralus"
-    
-    try 
+    $rname = Get-ResourceName
+    $resourceTypeParent = "Microsoft.Network/NetworkWatchers"
+    $location = Get-ProviderLocation $resourceTypeParent
+
+
+    try
     {
-        # Create the resource group
-        $resourceGroup = New-AzureRmResourceGroup -Name $rgname -Location $rglocation -Tags @{ testtag = "testval" }
-        
-        # Create the Network Watcher
-        $tags = @{"key1" = "value1"; "key2" = "value2"}
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $rgname -Location $location -Tag $tags
+        $resourceGroup = New-AzureRmResourceGroup -Name $rgname -Location $rglocation;
 
-        Assert-AreEqual $nw.Name $nwName
-        Assert-AreEqual "Succeeded" $nw.ProvisioningState
+        $vNetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Name $rname -Location $location;
 
-        # Get Network Watcher
-        $getNW = Get-AzureRmNetworkWatcher -ResourceGroupName $rgname -Name $nwName
+        $vNetworkWatcher = Get-AzureRMNetworkWatcher -ResourceGroupName $rgname -Name $rname;
 
-        Assert-AreEqual $getNW.Name $nwName		
-        Assert-AreEqual "Succeeded" $nw.ProvisioningState
+        $removeNetworkWatcher = Remove-AzureRMNetworkWatcher -ResourceGroupName $rgname -Name $rname -PassThru;
 
-        # List Network Watchers
-        $listNWByRg = Get-AzureRmNetworkWatcher -ResourceGroupName $rgname
-        $listNW = Get-AzureRmNetworkWatcher
+        Assert-AreEqual true $removeNetworkWatcher;
 
-        Assert-AreEqual 1 @($listNWByRg).Count
-
-        # Delete Network Watcher
-        $delete = Remove-AzureRmNetworkWatcher -ResourceGroupName $rgname -name $nwName
-
-        $list = Get-AzureRmNetworkWatcher -ResourceGroupName $rgname
-        Assert-AreEqual 0 @($list).Count
     }
     finally
     {
@@ -61,3 +46,39 @@ function Test-NetworkWatcherCRUD
         Clean-ResourceGroup $rgname
     }
 }
+
+function Test-NetworkWatcherCRUDAllParameters
+{
+    # Setup
+    $rgname = Get-ResourceGroupName
+    # TODO: generate names/values for required resources
+    $rglocation = Get-ProviderLocation ResourceManagement
+    $rname = Get-ResourceName
+    # TODO: place real values below
+    $resourceTypeParent = "Microsoft.Network/NetworkWatchers"
+    $location = Get-ProviderLocation $resourceTypeParent
+    $Tag = @{tag1='test'}
+
+
+    try
+    {
+        $resourceGroup = New-AzureRmResourceGroup -Name $rgname -Location $rglocation;
+
+        $vNetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Name $rname -Location $location -Tag @{tag1='test'};
+        Assert-AreEqualObjectProperties @{tag1='test'} $vNetworkWatcher.Tag;
+
+        $vNetworkWatcher = Get-AzureRMNetworkWatcher -ResourceGroupName $rgname -Name $rname;
+        Assert-AreEqualObjectProperties @{tag1='test'} $vNetworkWatcher.Tag;
+
+        $removeNetworkWatcher = Remove-AzureRMNetworkWatcher -ResourceGroupName $rgname -Name $rname -PassThru;
+
+        Assert-AreEqual true $removeNetworkWatcher;
+    }
+    finally
+    {
+        # Cleanup
+        Clean-ResourceGroup $rgname
+    }
+}
+
+

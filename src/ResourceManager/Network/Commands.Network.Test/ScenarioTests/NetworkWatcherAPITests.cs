@@ -37,7 +37,7 @@ namespace Commands.Network.Test.ScenarioTests
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestGetSecurityGroupView()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-GetSecurityGroupView");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-GetVMSecurityRule");
         }
 
         [Fact]
@@ -61,25 +61,25 @@ namespace Commands.Network.Test.ScenarioTests
             NetworkResourcesController.NewInstance.RunPsTest("Test-PacketCapture");
         }
 
-        [Fact(Skip = "Rerecord tests")]
+        [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestTroubleshoot()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-Troubleshoot");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-GetTroubleshooting");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestFlowLog()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-FlowLog");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-SetFlowLogConfiguration");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestConnectivityCheck()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-ConnectivityCheck");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-CheckConnectivity");
         }
     }
 }

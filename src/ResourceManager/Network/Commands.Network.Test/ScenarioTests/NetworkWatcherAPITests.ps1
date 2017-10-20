@@ -16,22 +16,20 @@
 .SYNOPSIS
 Deployment of resources: VM, storage account, network interface, nsg, virtual network and route table.
 #>
-function Get-TestResourcesDeployment([string]$rgn)
+$envContents = {};
+function Get-TestResourcesDeployment($virtualMachineName, $storageAccountName, $routeTableName, $virtualNetworkName, $networkInterfaceName,
+                                     $networkSecurityGroupName, $storageAccountType, $rgName, $location, $publicIpAddressName, $vpnGatewayName)
 {
-	$virtualMachineName = Get-ResourceName
-	$storageAccountName = Get-ResourceName
-	$routeTableName = Get-ResourceName
-	$virtualNetworkName = Get-ResourceName
-	$networkInterfaceName = Get-ResourceName
-	$networkSecurityGroupName = Get-ResourceName
-	$diagnosticsStorageAccountName = Get-ResourceName
-	
-		$paramFile = "..\..\TestData\DeploymentParameters.json"
+        $templateFile = "..\..\TestData\Deployment.json"
+        $paramFile = "..\..\TestData\DeploymentParameters.json"
+        $diagnosticsStorageAccountName = ((Get-ResourceName) + "diagacc");
+        $envContents = @{};
+
 		$paramContent =
 @"
 {
 			"rgName": {
-			"value": "$rgn"
+			"value": "$rgName"
 			},
 			"location": {
 			"value": "$location"
@@ -93,8 +91,51 @@ function Get-TestResourcesDeployment([string]$rgn)
 }
 "@;
 
-		$st = Set-Content -Path $paramFile -Value $paramContent -Force;
-		AzureRm.Resources\New-AzureRmResourceGroupDeployment -ResourceGroupName "$rgn" -TemplateFile "$templateFile" -TemplateParameterFile $paramFile
+        $st = Set-Content -Path $paramFile -Value $paramContent -Force;
+
+        $newStorageName = Get-ResourceName;
+        $containerName = Get-ResourceName;
+        New-AzureRmStorageAccount -ResourceGroupName $rgName -Name $newStorageName -Location $location -Type Standard_GRS;
+        $keysResult = Get-AzureRmStorageAccountKey -ResourceGroupName $rgName -Name $newStorageName;
+        $context = New-AzureStorageContext -StorageAccountName $newStorageName -StorageAccountKey $keysResult.Keys[0].Value;
+        New-AzureStorageContainer -Name $containerName -Context $context;
+        $container = Get-AzureStorageContainer -Name $containerName -Context $context;
+
+        AzureRm.Resources\New-AzureRmResourceGroupDeployment -ResourceGroupName $rgName -TemplateFile "$templateFile" -TemplateParameterFile $paramFile
+
+        if($vpnGatewayName)
+        {
+            $vpnVnetName = Get-ResourceName;
+            $vpnIpName = Get-ResourceName;
+            $vpnCfg = Get-ResourceName;
+
+            $subnet = New-AzureRmVirtualNetworkSubnetConfig -Name GatewaySubnet -AddressPrefix 10.0.1.0/24;
+            $vnet = New-AzureRmVirtualNetwork -Name $vpnVnetName -ResourceGroupName $rgName `
+                    -AddressPrefix 10.0.0.0/8 -Location $location -Subnet $subnet;
+            $publicIp = New-AzureRMPublicIpAddress -Name $vpnIpName -ResourceGroupName $rgName -Location $location `
+            -AllocationMethod Dynamic;
+
+            $ipConfig = New-AzureRmVirtualNetworkGatewayIpConfig -Name $vpnCfg -SubnetId $vnet.Subnets[0].Id `
+                        -PublicIpAddressId $publicIp.Id;
+
+            $vpn = New-AzureRmVirtualNetworkGateway -ResourceGroupName $rgname -Name $vpnGatewayName -Location $location `
+            -IpConfigurations $ipConfig -VpnType RouteBased;
+            $envContents.vpnGatewayId = $vpn.Id;
+        }
+
+        $vm = Get-AzureRmVM -ResourceGroupName $rgName;
+        $envContents.virtualMachineId = $vm.Id;
+        Set-AzureRmVMExtension -ResourceGroupName "$rgName" -Location "$location" -VMName $vm.Name -Name "MyNetworkWatcherAgent" -Type "NetworkWatcherAgentWindows" -TypeHandlerVersion "1.4" -Publisher "Microsoft.Azure.NetworkWatcher" 
+
+        $envContents.targetResourceGroupName = $rgName;
+        $nic = Get-AzureRmNetworkInterface -ResourceGroupName $rgName;
+        $envContents.networkInterfaceId = $nic.Id;
+        $envContents.LocalIpAddress = $nic.IpConfigurations[0].PrivateIpAddress;
+        $envContents.networkSecurityGroupId = (Get-AzureRmNetworkSecurityGroup -ResourceGroupName $rgName).Id;
+        $envContents.storageId = (Get-AzureRmStorageAccount -ResourceGroupName $rgName -Name $newStorageName).Id
+        $envContents.storagePath = $container.CloudBlobContainer.StorageUri.PrimaryUri.AbsoluteUri; #"https://${storageAccountName}.blob.core.windows.net/${containerName}"
+
+        return $envContents;
 }
 
 <#
@@ -104,112 +145,85 @@ Test GetTopology NetworkWatcher API.
 function Test-GetTopology
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "West Central US"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-    $nwRgName = Get-ResourceGroupName
-    $templateFile = "..\..\TestData\Deployment.json"
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
-        
-        # Deploy resources
-        Get-TestResourcesDeployment -rgn "$resourceGroupName"
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
-        
-        # Get topology in the resource group $resourceGroupName
-        $topology = Get-AzureRmNetworkWatcherTopology -NetworkWatcher $nw -TargetResourceGroupName $resourceGroupName
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        #Get Vm
-        $vm = Get-AzureRmVM -ResourceGroupName $resourceGroupName
 
-        #Get nic
-        $nic = Get-AzureRmNetworkInterface -ResourceGroupName $resourceGroupName
-
-        #Verification
-        Assert-AreEqual $topology.Resources.Count 9
-        Assert-AreEqual $topology.Resources[2].Name $vm.Name
-        Assert-AreEqual $topology.Resources[2].Id $vm.Id
-        Assert-AreEqual $topology.Resources[2].Associations[0].Name $nic.Name
-        Assert-AreEqual $topology.Resources[2].Associations[0].ResourceId $nic.Id
-        Assert-AreEqual $topology.Resources[2].Associations[0].AssociationType Contains
+        $vTopology = Get-AzureRMNetworkWatcherTopology -ResourceGroupName $rgname -Name $rname -TargetResourceGroupName $env.TargetResourceGroupName;
+        Assert-NotNull $vTopology;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
+
 
 <#
 .SYNOPSIS
 Test GetSecurityGroupView NetworkWatcher API.
 #>
-function Test-GetSecurityGroupView
+function Test-GetVMSecurityRule
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "West Central US"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-    $nwRgName = Get-ResourceGroupName
-    $securityRuleName = Get-ResourceName
-    $templateFile = "..\..\TestData\Deployment.json"
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        # Deploy resources
-        Get-TestResourcesDeployment -rgn "$resourceGroupName"
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
-        
-        #Get Vm
-        $vm = Get-AzureRmVM -ResourceGroupName $resourceGroupName
-        
-        #Get network security group
-        $nsg = Get-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroupName
-        
-        # Set security rule
-        $nsg[0] | Add-AzureRmNetworkSecurityRuleConfig -Name scr1 -Description "test" -Protocol Tcp -SourcePortRange * -DestinationPortRange 80 -SourceAddressPrefix * -DestinationAddressPrefix * -Access Deny -Priority 122 -Direction Outbound
-        $nsg[0] | Set-AzureRmNetworkSecurityGroup
 
-        #Use it when running test in record mode
-        #Start-Sleep -s 300
-
-        # Get nsg rules for the target VM
-        $nsgView = Get-AzureRmNetworkWatcherSecurityGroupView -NetworkWatcher $nw -Target $vm.Id
-
-        #Verification
-        Assert-AreEqual $nsgView.NetworkInterfaces[0].EffectiveSecurityRules[4].Access Deny
-        Assert-AreEqual $nsgView.NetworkInterfaces[0].EffectiveSecurityRules[4].DestinationPortRange 80-80
-        Assert-AreEqual $nsgView.NetworkInterfaces[0].EffectiveSecurityRules[4].Direction Outbound
-        Assert-AreEqual $nsgView.NetworkInterfaces[0].EffectiveSecurityRules[4].Name UserRule_scr1
-        Assert-AreEqual $nsgView.NetworkInterfaces[0].EffectiveSecurityRules[4].Protocol TCP
-        Assert-AreEqual $nsgView.NetworkInterfaces[0].EffectiveSecurityRules[4].Priority 122
+        $vVMSecurityRules = Get-AzureRmNetworkWatcherSecurityGroupView -ResourceGroupName $rgname -Name $rname -TargetVirtualMachineId $env.virtualMachineId;
+        Assert-NotNull $vVMSecurityRules;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
 
@@ -220,50 +234,40 @@ Test GetNextHop NetworkWatcher API.
 function Test-GetNextHop
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "West Central US"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-	$nwRgName = Get-ResourceGroupName
-	$securityRuleName = Get-ResourceName
-	$templateFile = "..\..\TestData\Deployment.json"
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        # Deploy resources
-        Get-TestResourcesDeployment -rgn "$resourceGroupName"
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
-        
-        #Get Vm
-        $vm = Get-AzureRmVM -ResourceGroupName $resourceGroupName
-        
-        #Get pablic IP address
-        $address = Get-AzureRmPublicIpAddress -ResourceGroupName $resourceGroupName
 
-        #Get next hop
-        $nextHop1 = Get-AzureRmNetworkWatcherNextHop -NetworkWatcher $nw -TargetVirtualMachineId $vm.Id -DestinationIPAddress 10.1.3.6 -SourceIPAddress $address.IpAddress
-        $nextHop2 = Get-AzureRmNetworkWatcherNextHop -NetworkWatcher $nw -TargetVirtualMachineId $vm.Id -DestinationIPAddress 12.11.12.14 -SourceIPAddress $address.IpAddress
-    
-        #Verification
-        Assert-AreEqual $nextHop1.NextHopType None
-        Assert-AreEqual $nextHop1.NextHopIpAddress 10.0.1.2
-        Assert-AreEqual $nextHop2.NextHopType Internet
-        Assert-AreEqual $nextHop2.RouteTableId "System Route"
+        $vNextHop = Get-AzureRMNetworkWatcherNextHop -ResourceGroupName $rgname -Name $rname -TargetVirtualMachineId $env.virtualMachineId -SourceIPAddress 10.0.0.4 -DestinationIPAddress 192.168.10.11 -TargetNetworkInterfaceId $env.networkInterfaceId;
+        Assert-NotNull $vNextHop;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
 
@@ -274,63 +278,40 @@ Test VerifyIPFlow NetworkWatcher API.
 function Test-VerifyIPFlow
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "West Central US"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-	$nwRgName = Get-ResourceGroupName
-	$securityGroupName = Get-ResourceName
-	$templateFile = "..\..\TestData\Deployment.json"
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        # Deploy resources
-        Get-TestResourcesDeployment -rgn "$resourceGroupName"
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
-        
-        #Get network security group
-        $nsg = Get-AzureRmNetworkSecurityGroup -ResourceGroupName $resourceGroupName
 
-        # Set security rules
-        $nsg[0] | Add-AzureRmNetworkSecurityRuleConfig -Name scr1 -Description "test1" -Protocol Tcp -SourcePortRange * -DestinationPortRange 80 -SourceAddressPrefix * -DestinationAddressPrefix * -Access Deny -Priority 122 -Direction Outbound
-        $nsg[0] | Set-AzureRmNetworkSecurityGroup
-
-        $nsg[0] | Add-AzureRmNetworkSecurityRuleConfig -Name sr2 -Description "test2" -Protocol Tcp -SourcePortRange "23-45" -DestinationPortRange "46-56" -SourceAddressPrefix * -DestinationAddressPrefix * -Access Allow -Priority 123 -Direction Inbound
-        $nsg[0] | Set-AzureRmNetworkSecurityGroup
-
-        #Start-Sleep -s 300
-
-        #Get Vm
-        $vm = Get-AzureRmVM -ResourceGroupName $resourceGroupName
-        
-        #Get private Ip address of nic
-        $nic = Get-AzureRmNetworkInterface -ResourceGroupName $resourceGroupName
-        $address = $nic[0].IpConfigurations[0].PrivateIpAddress
-
-        #Verify IP Flow
-        $verification1 = Test-AzureRmNetworkWatcherIPFlow -NetworkWatcher $nw -TargetVirtualMachineId $vm.Id -Direction Inbound -Protocol Tcp -RemoteIPAddress 121.11.12.14 -LocalIPAddress $address -LocalPort 50 -RemotePort 40
-        $verification2 = Test-AzureRmNetworkWatcherIPFlow -NetworkWatcher $nw -TargetVirtualMachineId $vm.Id -Direction Outbound -Protocol Tcp -RemoteIPAddress 12.11.12.14 -LocalIPAddress $address -LocalPort 80 -RemotePort 80
-
-        #Verification
-        Assert-AreEqual $verification1.Access Allow
-        Assert-AreEqual $verification2.Access Deny
-        Assert-AreEqual $verification1.RuleName securityRules/sr2
-        Assert-AreEqual $verification2.RuleName securityRules/scr1
+        $vIPFlow = Test-AzureRMNetworkWatcherIPFlow -ResourceGroupName $rgname -Name $rname -TargetVirtualMachineId $env.virtualMachineId -Direction Inbound -Protocol TCP -LocalPort 80 -RemotePort 80 -LocalIPAddress $env.localIPAddress -RemoteIPAddress 10.0.0.13 -TargetNetworkInterfaceId $env.networkInterfaceId;
+        Assert-NotNull $vIPFlow;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
 
@@ -428,136 +409,95 @@ function Test-PacketCapture
 .SYNOPSIS
 Test Troubleshoot API.
 #>
-function Test-Troubleshoot
+function Test-GetTroubleshooting
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "West Central US"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-    $nwRgName = Get-ResourceGroupName
-    $domainNameLabel = Get-ResourceName
-    $vnetName = Get-ResourceName
-    $publicIpName = Get-ResourceName
-    $vnetGatewayConfigName = Get-ResourceName
-    $gwName = Get-ResourceName
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+    $vpnGatewayName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName `
+                                    -vpnGatewayName $vpnGatewayName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        # Create the Virtual Network
-        $subnet = New-AzureRmVirtualNetworkSubnetConfig -Name "GatewaySubnet" -AddressPrefix 10.0.0.0/24
-        $vnet = New-AzureRmvirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroupName -Location $location -AddressPrefix 10.0.0.0/16 -Subnet $subnet
-        $vnet = Get-AzureRmvirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroupName
-        $subnet = Get-AzureRmVirtualNetworkSubnetConfig -Name "GatewaySubnet" -VirtualNetwork $vnet
- 
-        # Create the publicip
-        $publicip = New-AzureRmPublicIpAddress -ResourceGroupName $resourceGroupName -name $publicIpName -location $location -AllocationMethod Dynamic -DomainNameLabel $domainNameLabel    
- 
-        # Create & Get virtualnetworkgateway
-        $vnetIpConfig = New-AzureRmVirtualNetworkGatewayIpConfig -Name $vnetGatewayConfigName -PublicIpAddress $publicip -Subnet $subnet
-        $gw = New-AzureRmVirtualNetworkGateway -ResourceGroupName $resourceGroupName -Name $gwName -location $location -IpConfigurations $vnetIpConfig -GatewayType Vpn -VpnType RouteBased -EnableBgp $false
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
 
-        # Create storage
-        $stoname = 'sto' + $resourceGroupName
-        $stotype = 'Standard_GRS'
-        $containerName = 'cont' + $resourceGroupName
-
-        New-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $stoname -Location $location -Type $stotype;
-        $key = Get-AzureRmStorageAccountKey -ResourceGroupName $resourceGroupName -Name $stoname
-        $context = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $key[0].Value
-        New-AzureStorageContainer -Name $containerName -Context $context
-        $container = Get-AzureStorageContainer -Name $containerName -Context $context
-
-        $sto = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $stoname;
-
-        Start-AzureRmNetworkWatcherResourceTroubleshooting -NetworkWatcher $nw -TargetResourceId $gw.Id -StorageId $sto.Id -StoragePath $container.CloudBlobContainer.StorageUri.PrimaryUri.AbsoluteUri;
-        Get-AzureRmNetworkWatcherTroubleshootingResult -NetworkWatcher $nw -TargetResourceId $gw.Id
+        $vResourceTroubleshooting = Start-AzureRMNetworkWatcherResourceTroubleshooting -ResourceGroupName $rgname -Name $rname -TargetResourceId $env.vpnGatewayId -StorageId $env.storageId -StoragePath $env.storagePath;
+        Assert-NotNull $vResourceTroubleshooting;
+        $vTroubleshootingResult = Get-AzureRMNetworkWatcherTroubleshootingResult -ResourceGroupName $rgname -Name $rname -TargetResourceId $env.vpnGatewayId;
+        Assert-NotNull $vTroubleshootingResult;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
+
+
 
 <#
 .SYNOPSIS
 Test Flow log API.
 #>
-function Test-FlowLog
+function Test-SetFlowLogConfiguration
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "West Central US"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-    $nwRgName = Get-ResourceGroupName
-    $domainNameLabel = Get-ResourceName
-    $vnetName = Get-ResourceName
-    $subnetName = Get-ResourceName
-    $nsgName = Get-ResourceName
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        # Create the Virtual Network
-        $subnet = New-AzureRmVirtualNetworkSubnetConfig -Name $subnetName -AddressPrefix 10.0.1.0/24
-        $vnet = New-AzureRmvirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroupName -Location $location -AddressPrefix 10.0.0.0/16 -Subnet $subnet
-        
-        # Create NetworkSecurityGroup
-        $nsg = New-AzureRmNetworkSecurityGroup -name $nsgName -ResourceGroupName $resourceGroupName -Location $location
 
-        # Get NetworkSecurityGroup
-        $getNsg = Get-AzureRmNetworkSecurityGroup -name $nsgName -ResourceGroupName $resourceGroupName
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
- 
-        # Create storage
-        $stoname = 'sto' + $resourceGroupName
-        $stotype = 'Standard_GRS'
-        $containerName = 'cont' + $resourceGroupName
-
-        New-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $stoname -Location $location -Type $stotype;
-        $sto = Get-AzureRmStorageAccount -ResourceGroupName $resourceGroupName -Name $stoname;
-
-        $config = Set-AzureRmNetworkWatcherConfigFlowLog -NetworkWatcher $nw -TargetResourceId $getNsg.Id -EnableFlowLog $true -StorageAccountId $sto.Id
-        $status = Get-AzureRmNetworkWatcherFlowLogStatus -NetworkWatcher $nw -TargetResourceId $getNsg.Id 
-
-        # Validation
-        Assert-AreEqual $config.TargetResourceId $getNsg.Id
-        Assert-AreEqual $config.StorageId $sto.Id
-        Assert-AreEqual $config.Enabled $true
-        Assert-AreEqual $config.RetentionPolicy.Days 0
-        Assert-AreEqual $config.RetentionPolicy.Enabled $false
-        Assert-AreEqual $status.TargetResourceId $getNsg.Id
-        Assert-AreEqual $status.StorageId $sto.Id
-        Assert-AreEqual $status.Enabled $true
-        Assert-AreEqual $status.RetentionPolicy.Days 0
-        Assert-AreEqual $status.RetentionPolicy.Enabled $false
+        $vSetFlowLogConfiguration = Set-AzureRmNetworkWatcherConfigFlowLog -ResourceGroupName $rgname -Name $rname -TargetResourceId $env.networkSecurityGroupId -EnableFlowLog $true -StorageAccountId $env.storageId -EnableRetention $true -RetentionInDays 123;
+        Assert-NotNull $vSetFlowLogConfiguration;
+        $vFlowLogStatus = Get-AzureRMNetworkWatcherFlowLogStatus -ResourceGroupName $rgname -Name $rname -TargetResourceId $env.networkSecurityGroupId;
+        Assert-NotNull $vFlowLogStatus;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
 
@@ -565,57 +505,46 @@ function Test-FlowLog
 .SYNOPSIS
 Test ConnectivityCheck NetworkWatcher API.
 #>
-function Test-ConnectivityCheck
+function Test-CheckConnectivity
 {
     # Setup
-    $resourceGroupName = Get-ResourceGroupName
-    $nwName = Get-ResourceName
-    $location = "westcentralus"
-    $resourceTypeParent = "Microsoft.Network/networkWatchers"
-    $nwLocation = Get-ProviderLocation $resourceTypeParent
-    $nwRgName = Get-ResourceGroupName
-    $securityGroupName = Get-ResourceName
-    $templateFile = "..\..\TestData\Deployment.json"
-    $pcName1 = Get-ResourceName
-    $pcName2 = Get-ResourceName
-    
-    try 
+    $rname = Get-ResourceName;
+    $virtualMachineName = Get-ResourceName;
+    $storageAccountName = Get-ResourceName;
+    $routeTableName = Get-ResourceName;
+    $virtualNetworkName = Get-ResourceName;
+    $networkInterfaceName = Get-ResourceName;
+    $networkSecurityGroupName = Get-ResourceName;
+    $rgName = Get-ResourceGroupName;
+    $location = "westcentralus";
+    $publicIpAddressName = Get-ResourceName;
+
+    try
     {
-        # Create Resource group
-        New-AzureRmResourceGroup -Name $resourceGroupName -Location "$location"
+        New-AzureRmResourceGroup -Name $rgname -Location $location;
+        $env = Get-TestResourcesDeployment -virtualMachineName $virtualMachineName `
+                                    -storageAccountName $storageAccountName `
+                                    -routeTableName $routeTableName `
+                                    -virtualNetworkName $virtualNetworkName `
+                                    -networkInterfaceName $networkInterfaceName `
+                                    -networkSecurityGroupName $networkSecurityGroupName `
+                                    -storageAccountType $storageAccountType `
+                                    -rgName $rgName `
+                                    -location $location `
+                                    -publicIpAddressName $publicIpAddressName;
+        $NetworkWatcher = New-AzureRMNetworkWatcher -ResourceGroupName $rgname -Location $location -Name $rname;
 
-        # Deploy resources
-        Get-TestResourcesDeployment -rgn "$resourceGroupName"
-        
-        # Create Resource group for Network Watcher
-        New-AzureRmResourceGroup -Name $nwRgName -Location "$location"
-        
-        # Create Network Watcher
-        $nw = New-AzureRmNetworkWatcher -Name $nwName -ResourceGroupName $nwRgName -Location $location
 
-        #Get Vm
-        $vm = Get-AzureRmVM -ResourceGroupName $resourceGroupName
-        
-        #Install networkWatcherAgent on Vm
-        Set-AzureRmVMExtension -ResourceGroupName "$resourceGroupName" -Location "$location" -VMName $vm.Name -Name "MyNetworkWatcherAgent" -Type "NetworkWatcherAgentWindows" -TypeHandlerVersion "1.4" -Publisher "Microsoft.Azure.NetworkWatcher"
-
-        #Connectivity check
-        $check = Test-AzureRmNetworkWatcherConnectivity -NetworkWatcher $nw -SourceId $vm.Id -DestinationAddress "bing.com" -DestinationPort 80
-
-        #Verification
-        Assert-AreEqual $check.ConnectionStatus "Reachable"
-        Assert-AreEqual $check.ProbesFailed 0
-        Assert-AreEqual $check.Hops.Count 2
-        Assert-AreEqual $check.Hops[0].Type "Source"
-        Assert-AreEqual $check.Hops[1].Type "Internet"
-        Assert-AreEqual $check.Hops[0].Address "10.17.3.4"
+        $vCheckConnectivity = Test-AzureRmNetworkWatcherConnectivity -ResourceGroupName $rgname -Name $rname -SourceId $env.virtualMachineId -DestinationAddress bing.com -DestinationPort 80;
+        Assert-NotNull $vCheckConnectivity;
     }
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $resourceGroupName
-        Clean-ResourceGroup $nwRgName
+        Clean-ResourceGroup $rgname
     }
 }
+
+
 
 

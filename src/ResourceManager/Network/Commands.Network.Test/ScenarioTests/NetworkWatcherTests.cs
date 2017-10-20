@@ -28,9 +28,16 @@ namespace Commands.Network.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestNetworkWatcherCRUD()
+        public void TestNetworkWatcherCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-NetworkWatcherCRUD");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-NetworkWatcherCRUDMinimalParameters");
+        }
+
+        [Fact]
+        [Trait(Category.AcceptanceType, Category.CheckIn)]
+        public void TestNetworkWatcherCRUDAllParameters()
+        {
+            NetworkResourcesController.NewInstance.RunPsTest("Test-NetworkWatcherCRUDAllParameters");
         }
 
     }

@@ -28,168 +28,66 @@ namespace Commands.Network.Test.ScenarioTests
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDPublic()
+        public void TestLoadBalancerCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-Public");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDInternalDynamic()
+        public void TestLoadBalancerCRUDAllParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalDynamic");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUDAllParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDInternalStatic()
+        public void TestBackendAddressPoolCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalStatic");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-BackendAddressPoolCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDPublicNoInboundNATRule()
+        public void TestFrontendIPConfigurationCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-PublicNoInboundNATRule");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-FrontendIPConfigurationCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDPublicPublicNoLbRule()
+        public void TestInboundNatPoolCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-PublicNoLbRule");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-InboundNatPoolCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDInternalUsingId()
+        public void TestInboundNatRuleCRUDAllParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalUsingId");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-InboundNatRuleCRUDAllParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDPublicUsingId()
+        public void TestLoadBalancingRuleCRUDAllParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-PublicUsingId");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancingRuleCRUDAllParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerChildResource()
+        public void TestProbeCRUDMinimalParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerChildResource");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-ProbeCRUDMinimalParameters");
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerSet()
+        public void TestProbeCRUDAllParameters()
         {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerSet");
+            NetworkResourcesController.NewInstance.RunPsTest("Test-ProbeCRUDAllParameters");
         }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestCreateEmptyLoadBalancer()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-CreateEmptyLoadBalancer");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerNicAssociation()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancer-NicAssociation");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerNicAssociationDuringCreate()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancer-NicAssociationDuringCreate");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerInboundNatPoolConfigInternalLB()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerInboundNatPoolConfigCRUD-InternalLB");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerInboundNatPoolConfigCRUDPublicLB()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerInboundNatPoolConfigCRUD-PublicLB");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerMultiVipPublic()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerMultiVip-Public");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerMultiVipInternal()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerMultiVip-Internal");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetLoadBalancerObjectAssignment()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-SetLoadBalancerObjectAssignment");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetLoadBalancerCRUDPublicBasicSku()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-PublicBasicSku");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetLoadBalancerCRUDInternalBasicSku()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalBasicSku");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetLoadBalancerCRUDPublicStandardSku()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-PublicStandardSku");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestSetLoadBalancerCRUDInternalStandardSku()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalStandardSku");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDInternalHighlyAvailableBasicSku()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalHighlyAvailableBasicSku");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void TestLoadBalancerCRUDInternalHighlyAvailableStandardSku()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerCRUD-InternalHighlyAvailableStandardSku");
-        }
-
-        public void TestLoadBalancerZones()
-        {
-            NetworkResourcesController.NewInstance.RunPsTest("Test-LoadBalancerZones");
-        }
+        
     }
 }
