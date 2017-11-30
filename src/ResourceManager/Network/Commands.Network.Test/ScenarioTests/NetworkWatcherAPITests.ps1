@@ -111,6 +111,8 @@ function Test-GetTopology
     $nwLocation = Get-ProviderLocation $resourceTypeParent
     $nwRgName = Get-ResourceGroupName
     $templateFile = "..\..\TestData\Deployment.json"
+    $vnetName = Get-ResourceName
+    $subnetName = Get-ResourceName
     
     try 
     {
@@ -129,19 +131,24 @@ function Test-GetTopology
         # Get topology in the resource group $resourceGroupName
         $topology = Get-AzureRmNetworkWatcherTopology -NetworkWatcher $nw -TargetResourceGroupName $resourceGroupName
 
+        Assert-NotNull $topology
+
         #Get Vm
         $vm = Get-AzureRmVM -ResourceGroupName $resourceGroupName
 
         #Get nic
         $nic = Get-AzureRmNetworkInterface -ResourceGroupName $resourceGroupName
 
-        #Verification
-        Assert-AreEqual $topology.Resources.Count 9
-        Assert-AreEqual $topology.Resources[2].Name $vm.Name
-        Assert-AreEqual $topology.Resources[2].Id $vm.Id
-        Assert-AreEqual $topology.Resources[2].Associations[0].Name $nic.Name
-        Assert-AreEqual $topology.Resources[2].Associations[0].ResourceId $nic.Id
-        Assert-AreEqual $topology.Resources[2].Associations[0].AssociationType Contains
+        # Create the Virtual Network
+        $subnet = New-AzureRmVirtualNetworkSubnetConfig -Name $subnetName -AddressPrefix 10.0.1.0/24
+        $vnet = New-AzureRmvirtualNetwork -Name $vnetName -ResourceGroupName $resourceGroupName -Location $location -AddressPrefix 10.0.0.0/16 -Subnet $subnet
+        $subnet = Get-AzureRmVirtualNetworkSubnetConfig -Name $subnetName -VirtualNetwork $vnet
+
+        $topology = Get-AzureRmNetworkWatcherTopology -NetworkWatcher $nw -TargetVirtualNetworkId $vnet.Id
+        Assert-NotNull $topology
+
+        $topology = Get-AzureRmNetworkWatcherTopology -NetworkWatcher $nw -TargetSubnetId $subnet.Id
+        Assert-NotNull $topology
     }
     finally
     {
