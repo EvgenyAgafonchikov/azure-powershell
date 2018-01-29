@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management.Automation;
 
-namespace Microsoft.Azure.Commands.Network.Automation
+namespace Microsoft.Azure.Commands.Network
 {
     [Cmdlet("Get", "AzureRmRouteConfig"), OutputType(typeof(PSRoute))]
      public class GetAzureRmRouteConfigCommand : NetworkBaseCmdlet
