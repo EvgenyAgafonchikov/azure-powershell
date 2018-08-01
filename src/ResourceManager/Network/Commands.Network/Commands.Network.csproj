@@ -447,11 +447,11 @@
     <Compile Include="PublicIpPrefix\RemoveAzurePublicIpPrefixCommand.cs" />
     <Compile Include="PublicIpPrefix\SetAzurePublicIpPrefixCommand.cs" />
     <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\AddAzureServiceEndpointPolicyDefinitionCommand.cs" />
-    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\AzureNetworkServiceEndpointPolicyDefinitionBase.cs" />
-    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\GetAzureNetworkServiceEndpointPolicyDefinitionCommand.cs" />
-    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\NewAzureNetworkSecurityRuleConfigCommand.cs" />
-    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\RemoveAzureNetworkServiceEndpointPolicyCommand.cs" />
-    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\SetAzureNetworkSecurityRuleConfigCommand.cs" />
+    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\AzureServiceEndpointPolicyDefinitionBase.cs" />
+    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\GetAzureServiceEndpointPolicyDefinitionCommand.cs" />
+    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\NewAzureServiceEndpointPolicyDefinitionCommand.cs" />
+    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\RemoveAzureServiceEndpointPolicyDefinitionCommand.cs" />
+    <Compile Include="ServiceEndpointPolicy\ServiceEndpointPolicyDefinition\SetAzureServiceEndpointPolicyDefinitionCommand.cs" />
     <Compile Include="Usage\GetAzureNetworkUsageCommand.cs" />
     <Compile Include="VirtualNetworkGatewayConnection\GetAzureRmVirtualNetworkGatewayConnectionVpnDeviceConfigScript.cs" />
     <Compile Include="VirtualNetworkGatewayConnection\GetAzureRmVirtualNetworkGatewaySupportedVpnDevice.cs" />
