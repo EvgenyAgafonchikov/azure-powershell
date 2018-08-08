@@ -728,6 +728,8 @@ function Test-VirtualNetworkSubnetServiceEndpointPolicies
 
         Assert-Null $subnet.serviceEndpoints;
         Assert-Null $subnet.ServiceEndpointPolicies;
+
+        Remove-AzureRmServiceEndpointPolicy -Name $serviceEndpointPolicyName -ResourceGroupName $rgname
     }
     finally
     {
