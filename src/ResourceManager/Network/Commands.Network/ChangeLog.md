@@ -39,6 +39,7 @@
 	- Get-AzureRmPublicIpPrefix
 	- Remove-AzureRmPublicIpPrefix
 	- Set-AzureRmPublicIpPrefix
+* Added service endpoint policies cmdlets
 
 ## Version 6.4.1
 * Updated all help files to include full parameter types and correct input/output types.
