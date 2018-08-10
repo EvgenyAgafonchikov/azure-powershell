@@ -1,4 +1,4 @@
-<!--
+﻿<!--
     Please leave this section at the top of the change log.
 
     Changes for the current release should go under the section titled "Current Release", and should adhere to the following format:
@@ -34,6 +34,11 @@
 * Improved exception messages: added more details to output
 * Dropped outdated warnings
 * Changed default models representation to table-view
+* Added PublicIpPrefix Functionality. New cmdlets added
+	- New-AzureRmPublicIpPrefix
+	- Get-AzureRmPublicIpPrefix
+	- Remove-AzureRmPublicIpPrefix
+	- Set-AzureRmPublicIpPrefix
 
 ## Version 6.4.1
 * Updated all help files to include full parameter types and correct input/output types.
