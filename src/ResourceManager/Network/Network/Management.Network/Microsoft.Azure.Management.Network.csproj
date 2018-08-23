@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<!-- Please do not move/edit code below this line -->
+	<Import Project="..\AzSdk.reference.props" />
+	<!-- Please do not move/edit code below this line -->
+
+	<PropertyGroup>
+		<PackageId>Microsoft.Azure.Management.Network</PackageId>
+		<Description>Provides management capabilities for Network services.</Description>
+		<AssemblyName>Microsoft.Azure.Management.Network</AssemblyName>
+		<Version>19.2.0-preview</Version>
+		<PackageTags>Microsoft Azure Network management;Network;Network management;</PackageTags>    
+		<PackageReleaseNotes>
+		<![CDATA[
+			- Added missing parameter (resourceGroupName) to VpnConnections.ListByVpnGateway
+		]]></PackageReleaseNotes>
+	</PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net452;netstandard1.4</TargetFrameworks>
+		<SignAssembly>false</SignAssembly>
+	</PropertyGroup>
+
+	<!-- Please do not move/edit code below this line -->
+	<Import Condition=" Exists('..\AzSdk.RP.props') " Project="..\AzSdk.RP.props" />
+	<!-- Please do not move/edit code above this line -->
+</Project>
