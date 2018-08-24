@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- File name extension must be .runsettings -->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+<!--
+About include/exclude lists:
+Empty "Include" clauses imply all; empty "Exclude" clauses imply none.
+Each element in the list is a regular expression (ECMAScript syntax). See http://msdn.microsoft.com/library/2k3te2cs.aspx.
+An item must first match at least one entry in the include list to be included.
+Included items must then not match any entries in the exclude list to remain included.
+-->
+
+            <!-- Match assembly file paths: -->
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*microsoft.azure.management.network.*</ModulePath>
+              </Include>
+            </ModulePaths>
+
+            <!-- Match attributes on any code element: -->
+            <Attributes>
+              <Exclude>
+                <!-- Don't forget "Attribute" at the end of the name -->
+                <Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
+                <Attribute>^System\.Runtime\.CompilerServices.CompilerGeneratedAttribute$</Attribute>
+                <Attribute>^System\.CodeDom\.Compiler.GeneratedCodeAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.CodeAnalysis.ExcludeFromCodeCoverageAttribute$</Attribute>
+              </Exclude>
+            </Attributes>
+
+            <Sources>
+              <Exclude>
+                <Source>.*\\.*Operations.cs</Source>
+                <Source>.*\\NetworkManagementClient.cs</Source>
+                <Source>.*\\SdkInfo_NetworkManagementClient.cs</Source>
+                <!-- Below are operations we don't need client experience for -->
+                <Source>.*\\InboundNatRulesOperationsExtensions.cs</Source>
+                <Source>.*\\LoadBalancerBackendAddressPoolsOperationsExtensions.cs</Source>
+                <Source>.*\\LoadBalancerFrontendIPConfigurationsOperationsExtensions.cs</Source>
+                <Source>.*\\LoadBalancerLoadBalancingRulesOperationsExtensions.cs</Source>
+                <Source>.*\\LoadBalancerNetworkInterfacesOperationsExtensions.cs</Source>
+                <Source>.*\\LoadBalancerProbesOperationsExtensions.cs</Source>
+                <Source>.*\\NetworkInterfaceLoadBalancersOperationsExtensions.cs</Source>
+                <!-- Below are child operations that are not covered by current Azure PS implementation -->
+                <Source>.*\\ExpressRouteCircuitAuthorizationsOperationsExtensions.cs</Source>
+                <Source>.*\\ExpressRouteCircuitPeeringsOperationsExtensions.cs</Source>
+                <Source>.*\\ExpressRouteCrossConnectionPeeringsOperationsExtensions.cs</Source>
+                <Source>.*\\NetworkInterfaceIPConfigurationsOperationsExtensions.cs</Source>
+                <Source>.*\\RouteFilterRulesOperationsExtensions.cs</Source>
+                <Source>.*\\RoutesOperationsExtensions.cs</Source>
+                <Source>.*\\SecurityRulesOperationsExtensions.cs</Source>
+                <Source>.*\\DefaultSecurityRulesOperationsExtensions.cs</Source>
+                <Source>.*\\SubnetsOperationsExtensions.cs</Source>
+                <Source>.*\\ExpressRouteCircuitConnectionsOperationsExtensions.cs</Source>
+                <!-- Ignore models that are used for return only as they are not indicative; Same for their properties -->
+                <Source>.*\\Usage.cs</Source>
+                <Source>.*\\GatewayRouteListResult.cs</Source>
+                <Source>.*\\ApplicationGatewayBackendHealth.cs</Source>
+                <Source>.*\\DnsNameAvailabilityResult.cs</Source>
+                <Source>.*\\SecurityGroupViewResult.cs</Source>
+                <Source>.*\\AvailableProvidersList.cs</Source>
+                <Source>.*\\BgpPeerStatusListResult.cs</Source>
+                <Source>.*\\ApplicationGatewayAvailableWafRuleSetsResult.cs</Source>
+                <Source>.*\\ConnectionMonitorQueryResult.cs</Source>
+                <Source>.*\\BgpServiceCommunity.cs</Source>
+                <Source>.*\\ApplicationGatewayBackendHealthPool.cs</Source>
+                <Source>.*\\AvailableProvidersListCity.cs</Source>
+                <Source>.*\\ExpressRouteCircuitsArpTableListResult.cs</Source>
+                <Source>.*\\ApplicationGatewayFirewallRule.cs</Source>
+                <Source>.*\\ExpressRouteCircuitsRoutesTableListResult.cs</Source>
+                <Source>.*\\ExpressRouteCircuitsRoutesTableSummaryListResult.cs</Source>
+                <Source>.*\\UsageName.cs</Source>
+                <Source>.*\\SecurityGroupNetworkInterface.cs</Source>
+                <Source>.*\\ExpressRouteServiceProviderBandwidthsOffered.cs</Source>
+                <Source>.*\\VerificationIPFlowResult.cs</Source>
+                <Source>.*\\ApplicationGatewayBackendHealthHttpSettings.cs</Source>
+                <Source>.*\\NetworkInterfaceAssociation.cs</Source>
+                <Source>.*\\VirtualNetworkUsageName.cs</Source>
+                <Source>.*\\IPAddressAvailabilityResult.cs</Source>
+                <Source>.*\\EndpointServiceResult.cs</Source>
+                <Source>.*\\AvailableProvidersListCountry.cs</Source>
+                <Source>.*\\ApplicationGatewayFirewallRuleGroup.cs</Source>
+                <Source>.*\\ApplicationGatewayBackendHealthServer.cs</Source>
+                <Source>.*\\ApplicationGatewaySslPredefinedPolicy.cs</Source>
+                <Source>.*\\TopologyAssociation.cs</Source>
+                <Source>.*\\ExpressRouteServiceProvider.cs</Source>
+                <Source>.*\\AvailableProvidersListState.cs</Source>
+                <Source>.*\\ExpressRouteCircuitArpTable.cs</Source>
+                <Source>.*\\TopologyResource.cs</Source>
+                <Source>.*\\ApplicationGatewayAvailableSslOptions.cs</Source>
+                <Source>.*\\ApplicationGatewayFirewallRuleSet.cs</Source>
+                <Source>.*\\ExpressRouteCircuitStats.cs</Source>
+                <Source>.*\\SecurityRuleAssociations.cs</Source>
+                <Source>.*\\AzureReachabilityReportItem.cs</Source>
+                <Source>.*\\Topology.cs</Source>
+                <Source>.*\\VirtualNetworkUsage.cs</Source>
+                <Source>.*\\ExpressRouteCircuitRoutesTableSummary.cs</Source>
+                <Source>.*\\ConnectivityInformation.cs</Source>
+                <Source>.*\\BgpPeerStatus.cs</Source>
+                <Source>.*\\EffectiveNetworkSecurityRule.cs</Source>
+                <Source>.*\\PSConnectionMonitorQueryResult.cs</Source>
+                <Source>.*\\ConnectivityIssue.cs</Source>
+                <Source>.*\\ConnectionStateSnapshot.cs</Source>
+                <Source>.*\\MetricSpecification.cs</Source>
+                <Source>.*\\Dimension.cs</Source>
+                <Source>.*\\Availability.cs</Source>
+                <Source>.*\\EffectiveNetworkSecurityGroup.cs</Source>
+                <Source>.*\\EffectiveNetworkSecurityGroupAssociation.cs</Source>
+                <Source>.*\\EffectiveNetworkSecurityGroupListResult.cs</Source>
+                <Source>.*\\EffectiveRoute.cs</Source>
+                <Source>.*\\EffectiveRouteListResult.cs</Source>
+                <Source>.*\\AzureReachabilityReportLatencyInfo.cs</Source>
+                <Source>.*\\ExpressRouteCircuitRoutesTable.cs</Source>
+                <Source>.*\\ExpressRouteCrossConnectionRoutesTableSummary.cs</Source>
+                <Source>.*\\ExpressRouteCrossConnectionsRoutesTableSummaryListResult.cs</Source>
+                <Source>.*\\LogSpecification.cs</Source>
+                <Source>.*\\Operation.cs</Source>
+                <Source>.*\\OperationDisplay.cs</Source>
+                <Source>.*\\OperationPropertiesFormatServiceSpecification.cs</Source>
+                <Source>.*\\PacketCaptureQueryStatusResult.cs</Source>
+                <Source>.*\\PacketCaptureResult.cs</Source>
+                <Source>.*\\SubnetAssociation.cs</Source>
+                <Source>.*\\TroubleshootingDetails.cs</Source>
+                <Source>.*\\TroubleshootingRecommendedActions.cs</Source>
+                <Source>.*\\TroubleshootingResult.cs</Source>
+                <Source>.*\\AzureReachabilityReport.cs</Source>
+                <Source>.*\\ConnectionMonitorResult.cs</Source>
+                <!-- Ignore some common -->
+                <Source>.*\\OperationsExtensions.cs</Source>
+                <Source>.*\\Page.cs</Source>
+                <Source>.*\\Page1.cs</Source>
+                <Source>.*\\Error.cs</Source>
+                <Source>.*\\ErrorDetails.cs</Source>
+                <Source>.*\\ErrorException.cs</Source>
+                <Source>.*\\AzureAsyncOperationResult.cs</Source>
+                <Source>.*\\ResourceNavigationLink.cs</Source>
+              </Exclude>
+            </Sources>
+
+            <!-- Match fully qualified names of functions: -->
+            <!-- (Use "\." to delimit namespaces in C# or Visual Basic, "::" in C++.)  -->
+            <Functions>
+              <Exclude>
+                <Function>.*Begin.*</Function>
+                <Function>.*Next.*</Function>
+                <Function>.*\.Models\..*Validate.*</Function>
+                <!-- Below are functions we don't need client experience for -->
+                <Function>.*UpdateTags.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.GetVirtualMachineScaleSetIpConfiguration.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.ListVirtualMachineScaleSetIpConfigurations.*</Function>
+                <!-- Hardcoded filters to avoid false negatives. Some features are ot tested while implemented -->
+                <!-- Comment out the filters below to get more correct test coverage data -->
+                <Function>.*PublicIPAddressesOperationsExtensions\.ListAll.*</Function>
+                <Function>.*VirtualNetworksOperationsExtensions\.ListAll.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.ListAll.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.GetEffectiveRouteTable.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.ListEffectiveNetworkSecurityGroups.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.ListVirtualMachineScaleSetVMNetworkInterfaces.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.ListVirtualMachineScaleSetNetworkInterfaces.*</Function>
+                <Function>.*NetworkInterfacesOperationsExtensions\.GetVirtualMachineScaleSetNetworkInterface.*</Function>
+                <Function>.*NetworkSecurityGroupsOperationsExtensions\.ListAll.*</Function>
+                <Function>.*RouteTablesOperationsExtensions\.ListAll.*</Function>
+                <Function>.*LoadBalancersOperationsExtensions\.ListAll.*</Function>
+                <Function>.*ApplicationGatewaysOperationsExtensions\.List\(.*\)</Function>
+                <Function>.*ApplicationGatewaysOperationsExtensions\.ListAll.*</Function>
+                <Function>.*ApplicationGatewaysOperationsExtensions\.Start.*</Function>
+                <Function>.*VirtualNetworkGatewaysOperationsExtensions\.GetVpnProfilePackageUrl.*</Function>
+                <Function>.*VirtualNetworkGatewaysOperationsExtensions\.GenerateVpnProfile.*</Function>
+                <Function>.*VirtualNetworkGatewaysOperationsExtensions\.Generatevpnclientpackage.*</Function>
+                <Function>.*ExpressRouteCircuitsOperationsExtensions\.ListAll.*</Function>
+                <Function>.*ExpressRouteCircuitsOperationsExtensions\.GetPeeringStats.*</Function>
+                <Function>.*VirtualNetworkGatewayConnectionsOperationsExtensions\.ResetSharedKey.*</Function>
+                <Function>.*RouteFiltersOperationsExtensions\.Delete.*</Function>
+                <Function>.*RouteFiltersOperationsExtensions\.ListByResourceGroup.*</Function>
+                <Function>.*RouteFiltersOperationsExtensions\.List\(.*\)</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.ListByResourceGroup.*</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.List\(.*\)</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.Get.*</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.CreateOrUpdate.*</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.ListArpTable.*</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.ListRoutesTableSummary.*</Function>
+                <Function>.*ExpressRouteCrossConnectionsOperationsExtensions\.ListRoutesTable.*</Function>
+                <!-- Ignore default constructors when custom is covered -->
+                <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
+                <Function>.*HTTPConfiguration\.HTTPConfiguration\(\)</Function>
+                <Function>.*HTTPHeader\.HTTPHeader\(\)</Function>
+                <Function>.*ProtocolConfiguration\.ProtocolConfiguration\(\)</Function>
+                <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
+              </Exclude>
+            </Functions>
+
+            <!-- We recommend you do not change the following values: -->
+            <UseVerifiableInstrumentation>True</UseVerifiableInstrumentation>
+            <AllowLowIntegrityProcesses>True</AllowLowIntegrityProcesses>
+            <CollectFromChildProcesses>True</CollectFromChildProcesses>
+            <CollectAspDotNet>False</CollectAspDotNet>
+
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
