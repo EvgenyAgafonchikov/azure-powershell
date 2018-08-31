@@ -292,17 +292,17 @@ function Test-VirtualNetworkPeeringCRUD
 
         Assert-AreEqual $vnet1.ResourceGroupName $rgname    
         Assert-AreEqual $vnet1.Name $vnet1Name    
-        Assert-AreEqual $vnet1.Location $rglocation
-        Assert-AreEqual "Succeeded" $vnet1.ProvisioningState        
+        Assert-AreEqual $vnet1.Location.Replace(" ","") $rglocation.Replace(" ","")
+        Assert-AreEqual "Succeeded" $vnet1.ProvisioningState
         Assert-AreEqual $vnet1.Subnets[0].Name $subnet1.Name
 
         # Create the Virtual Network2
         $subnet2 = New-AzureRmVirtualNetworkSubnetConfig -Name $subnet2Name -AddressPrefix 10.1.1.0/24
         $vnet2 = New-AzureRmvirtualNetwork -Name $vnet2Name -ResourceGroupName $rgname -Location $location -AddressPrefix 10.1.0.0/16 -Subnet $subnet2
 
-        Assert-AreEqual $vnet2.ResourceGroupName $rgname    
-        Assert-AreEqual $vnet2.Name $vnet2Name    
-        Assert-AreEqual $vnet2.Location $rglocation
+        Assert-AreEqual $vnet2.ResourceGroupName $rgname
+        Assert-AreEqual $vnet2.Name $vnet2Name
+        Assert-AreEqual $vnet2.Location.Replace(" ","") $rglocation.Replace(" ","")
         Assert-AreEqual "Succeeded" $vnet2.ProvisioningState 
 
         # Add Peering to vnet1

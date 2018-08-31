@@ -54,7 +54,7 @@ namespace Commands.Network.Test.ScenarioTests
             NetworkResourcesController.NewInstance.RunPsTest(_logger, "Test-subnetCRUD");
         }
 
-        [Fact(Skip = "'The '1' auxiliary tokens are either not application token(s) or are from the application(s) ... which are different from the application of primary identity <...>.' StatusCode: 401; ReasonPhrase: Unauthorized.")]
+        [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         [Trait(Category.Owner, Category.sdnnrp)]
         public void TestVirtualNetworkPeeringCRUD()
