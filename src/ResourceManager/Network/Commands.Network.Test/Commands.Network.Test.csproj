@@ -43,9 +43,6 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Azure.Management.Network, Version=19.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\Microsoft.Azure.Management.Network.19.5.0-preview\lib\net452\Microsoft.Azure.Management.Network.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Azure.Management.OperationalInsights, Version=0.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Microsoft.Azure.Management.OperationalInsights.0.18.0-preview\lib\net45\Microsoft.Azure.Management.OperationalInsights.dll</HintPath>
     </Reference>
@@ -722,6 +719,10 @@
     <ProjectReference Include="..\Commands.Network\Commands.Network.csproj">
       <Project>{98cfd96b-a6bc-4f15-ae2c-603fc2b58981}</Project>
       <Name>Commands.Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Management.Network\Microsoft.Azure.Management.Network.csproj">
+      <Project>{736944fe-b50c-4c62-b3d2-17b59c4c5ca4}</Project>
+      <Name>Microsoft.Azure.Management.Network</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
