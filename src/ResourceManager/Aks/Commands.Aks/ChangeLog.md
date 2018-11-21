@@ -19,6 +19,12 @@
 -->
 ## Current Release
 
+## Version 0.0.7
+* Update dependencies for type mapping issue
+
+## Version 0.0.6
+* Update version of YamlDotNet.Signed used
+
 ## Version 0.0.5
 * Updated to the latest version of the Azure ClientRuntime.
 
