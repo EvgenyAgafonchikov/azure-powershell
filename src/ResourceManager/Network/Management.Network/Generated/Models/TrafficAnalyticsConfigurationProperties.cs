@@ -40,16 +40,12 @@ namespace Microsoft.Azure.Management.Network.Models
         /// workspace</param>
         /// <param name="workspaceResourceId">Resource Id of the attached
         /// workspace </param>
-        /// <param name="trafficAnalyticsInterval">The interval in minutes
-        /// which would decide how frequently TA service should do flow
-        /// analytics</param>
-        public TrafficAnalyticsConfigurationProperties(bool enabled, string workspaceId, string workspaceRegion, string workspaceResourceId, int? trafficAnalyticsInterval = default(int?))
+        public TrafficAnalyticsConfigurationProperties(bool enabled, string workspaceId, string workspaceRegion, string workspaceResourceId)
         {
             Enabled = enabled;
             WorkspaceId = workspaceId;
             WorkspaceRegion = workspaceRegion;
             WorkspaceResourceId = workspaceResourceId;
-            TrafficAnalyticsInterval = trafficAnalyticsInterval;
             CustomInit();
         }
 
@@ -81,13 +77,6 @@ namespace Microsoft.Azure.Management.Network.Models
         /// </summary>
         [JsonProperty(PropertyName = "workspaceResourceId")]
         public string WorkspaceResourceId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the interval in minutes which would decide how
-        /// frequently TA service should do flow analytics
-        /// </summary>
-        [JsonProperty(PropertyName = "trafficAnalyticsInterval")]
-        public int? TrafficAnalyticsInterval { get; set; }
 
         /// <summary>
         /// Validate the object.

@@ -341,6 +341,11 @@ namespace Microsoft.Azure.Management.Network
         IVirtualNetworkPeeringsOperations VirtualNetworkPeerings { get; }
 
         /// <summary>
+        /// Gets the IVirtualNetworkTapsOperations.
+        /// </summary>
+        IVirtualNetworkTapsOperations VirtualNetworkTaps { get; }
+
+        /// <summary>
         /// Gets the IVirtualNetworkGatewaysOperations.
         /// </summary>
         IVirtualNetworkGatewaysOperations VirtualNetworkGateways { get; }
@@ -354,11 +359,6 @@ namespace Microsoft.Azure.Management.Network
         /// Gets the ILocalNetworkGatewaysOperations.
         /// </summary>
         ILocalNetworkGatewaysOperations LocalNetworkGateways { get; }
-
-        /// <summary>
-        /// Gets the IVirtualNetworkTapsOperations.
-        /// </summary>
-        IVirtualNetworkTapsOperations VirtualNetworkTaps { get; }
 
         /// <summary>
         /// Gets the IVirtualWansOperations.

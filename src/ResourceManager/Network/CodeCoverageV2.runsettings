@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File name extension must be .runsettings -->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="Code Coverage" uri="datacollector://Microsoft/CodeCoverage/2.0" assemblyQualifiedName="Microsoft.VisualStudio.Coverage.DynamicCoverageDataCollector, Microsoft.VisualStudio.TraceCollector, Version=11.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+        <Configuration>
+          <CodeCoverage>
+<!--
+About include/exclude lists:
+Empty "Include" clauses imply all; empty "Exclude" clauses imply none.
+Each element in the list is a regular expression (ECMAScript syntax). See http://msdn.microsoft.com/library/2k3te2cs.aspx.
+An item must first match at least one entry in the include list to be included.
+Included items must then not match any entries in the exclude list to remain included.
+-->
+
+            <!-- Match assembly file paths: -->
+            <ModulePaths>
+              <Include>
+                <ModulePath>.*microsoft.azure.management.network.*</ModulePath>
+              </Include>
+            </ModulePaths>
+
+            <!-- Match attributes on any code element: -->
+            <Attributes>
+              <Exclude>
+                <!-- Don't forget "Attribute" at the end of the name -->
+                <!--Attribute>^System\.Diagnostics\.DebuggerHiddenAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.DebuggerNonUserCodeAttribute$</Attribute>
+                <Attribute>^System\.Runtime\.CompilerServices.CompilerGeneratedAttribute$</Attribute>
+                <Attribute>^System\.CodeDom\.Compiler.GeneratedCodeAttribute$</Attribute>
+                <Attribute>^System\.Diagnostics\.CodeAnalysis.ExcludeFromCodeCoverageAttribute$</Attribute-->
+              </Exclude>
+            </Attributes>
+
+            <Sources>
+              <Exclude>
+                <Source>.*Operations\.cs</Source>
+              </Exclude>
+            </Sources>
+
+            <!-- Match fully qualified names of functions: -->
+            <!-- (Use "\." to delimit namespaces in C# or Visual Basic, "::" in C++.)  -->
+            <Functions>
+              <Exclude>
+                <Function>.*Begin.*</Function>
+                <Function>.*Next.*</Function>
+                <Function>.*\.Models\..*Validate.*</Function>
+                <Function>.*\.Models\..*\(\).*</Function>
+                <Function>.*UpdateTags.*</Function>
+                <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
+                <Function>.*HTTPConfiguration\.HTTPConfiguration\(\)</Function>
+                <Function>.*HTTPHeader\.HTTPHeader\(\)</Function>
+                <Function>.*ProtocolConfiguration\.ProtocolConfiguration\(\)</Function>
+                <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
+              </Exclude>
+            </Functions>
+
+            <!-- We recommend you do not change the following values: -->
+            <UseVerifiableInstrumentation>True</UseVerifiableInstrumentation>
+            <AllowLowIntegrityProcesses>True</AllowLowIntegrityProcesses>
+            <CollectFromChildProcesses>True</CollectFromChildProcesses>
+            <CollectAspDotNet>False</CollectAspDotNet>
+
+          </CodeCoverage>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
