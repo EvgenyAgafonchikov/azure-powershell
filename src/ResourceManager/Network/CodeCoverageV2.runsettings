@@ -36,6 +36,27 @@ Included items must then not match any entries in the exclude list to remain inc
             <Sources>
               <Exclude>
                 <Source>.*Operations\.cs</Source>
+                <Source>.*SdkInfo_NetworkManagementClient\.cs</Source>
+                <!-- Exclude items that don't require client experience -->
+                <Source>.*InboundNatRulesOperationsExtensions\.cs</Source>
+                <Source>.*LoadBalancerBackendAddressPoolsOperationsExtensions\.cs</Source>
+                <Source>.*LoadBalancerFrontendIPConfigurationsOperationsExtensions\.cs</Source>
+                <Source>.*LoadBalancerLoadBalancingRulesOperationsExtensions\.cs</Source>
+                <Source>.*LoadBalancerNetworkInterfacesOperationsExtensions\.cs</Source>
+                <Source>.*LoadBalancerOutboundRulesOperationsExtensions\.cs</Source>
+                <Source>.*LoadBalancerProbesOperationsExtensions\.cs</Source>
+                <Source>.*NetworkInterfaceLoadBalancersOperationsExtensions\.cs</Source>
+                <Source>.*DefaultSecurityRulesOperationsExtensions\.cs</Source>
+                <!-- Exclude items that are implemented via parent's API -->
+                <Source>.*NetworkInterfaceIPConfigurationsOperationsExtensions\.cs</Source>
+                <Source>.*RoutesOperationsExtensions\.cs</Source>
+                <Source>.*SecurityRulesOperationsExtensions\.cs</Source>
+                <Source>.*ExpressRouteCircuitAuthorizationsOperationsExtensions\.cs</Source>
+                <Source>.*ExpressRouteCircuitPeeringsOperationsExtensions\.cs</Source>
+                <Source>.*ExpressRouteLinksOperationsExtensions\.cs</Source>
+                <Source>.*SubnetsOperationsExtensions\.cs</Source>
+                <Source>.*ExpressRouteConnectionsOperationsExtensions\.cs</Source>
+                <Source>.*ServiceEndpointPolicyDefinitionsOperationsExtensions\.cs</Source>
               </Exclude>
             </Sources>
 
@@ -46,13 +67,13 @@ Included items must then not match any entries in the exclude list to remain inc
                 <Function>.*Begin.*</Function>
                 <Function>.*Next.*</Function>
                 <Function>.*\.Models\..*Validate.*</Function>
-                <Function>.*\.Models\..*\(\).*</Function>
                 <Function>.*UpdateTags.*</Function>
+                <!--Function>.*\.Models\..*\(\).*</Function>
                 <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
                 <Function>.*HTTPConfiguration\.HTTPConfiguration\(\)</Function>
                 <Function>.*HTTPHeader\.HTTPHeader\(\)</Function>
                 <Function>.*ProtocolConfiguration\.ProtocolConfiguration\(\)</Function>
-                <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
+                <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function-->
               </Exclude>
             </Functions>
 
