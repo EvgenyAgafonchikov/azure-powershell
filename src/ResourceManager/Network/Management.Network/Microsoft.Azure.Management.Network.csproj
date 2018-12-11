@@ -1,26 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<!-- Please do not move/edit code below this line -->
-	<Import Project=".\AzSdk.reference.props" />
+	<Import Project="$([MSBuild]::GetPathOfFileAbove('AzSdk.reference.props'))" />
 	<!-- Please do not move/edit code below this line -->
 
 	<PropertyGroup>
 		<PackageId>Microsoft.Azure.Management.Network</PackageId>
 		<Description>Provides management capabilities for Network services.</Description>
 		<AssemblyName>Microsoft.Azure.Management.Network</AssemblyName>
-		<Version>19.5.0-preview</Version>
+		<Version>19.7.0-preview</Version>
 		<PackageTags>Microsoft Azure Network management;Network;Network management;</PackageTags>    
 		<PackageReleaseNotes>
 		<![CDATA[
-      - Added AddressPrefixes on Subnet properties
-      - Included required properties for outbound rule 
-      - Azure Firewall FQDN Tag added as a top level resource
-      - Swagger Coverage/Completeness- for operation CheckNameAvailability
-      - Azure Firewall NAT Rule Collection 
-      - Added support for interface endpoints
-      - Added linkedResourceType and hostedWorkloads to nic 
-      - Added App Gateway Trusted root certificate changes 
-      - Added ExpressRoute gateway resource
-      - Added support for delegations on a subnet      
+        - Added new child resource for ApplicationGateway: ApplicationGatewayRewriteRuleSets
+        - Added support for ManagedServiceIdentity in ApplicationGateway
+        - Added support for KeyVault's secret Id in ApplicationGatewaySslCertificates
+        - Added support for FlowLogFormatParameters in FlowLogInformation
+        - Added support for TrafficAnalyticsInterval in TrafficAnalyticsConfiguration
+        - The following properties are made read-only as they were intended to be read-only: AzureFirewall's PrivateIPAddress, NetworkInterface's VirtualMachine
 		]]></PackageReleaseNotes>
 	</PropertyGroup>
 	<PropertyGroup>
@@ -28,6 +24,6 @@
 	</PropertyGroup>
 
 	<!-- Please do not move/edit code below this line -->
-	<!--Import Condition=" Exists('$([MSBuild]::GetPathOfFileAbove(AzSdk.RP.props))') " Project="$([MSBuild]::GetPathOfFileAbove('AzSdk.RP.props'))" /-->
+	<Import Condition=" Exists('$([MSBuild]::GetPathOfFileAbove(AzSdk.RP.props))') " Project="$([MSBuild]::GetPathOfFileAbove('AzSdk.RP.props'))" />
 	<!-- Please do not move/edit code above this line -->
 </Project>
