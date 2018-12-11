@@ -47,6 +47,7 @@ Included items must then not match any entries in the exclude list to remain inc
                 <Source>.*LoadBalancerProbesOperationsExtensions\.cs</Source>
                 <Source>.*NetworkInterfaceLoadBalancersOperationsExtensions\.cs</Source>
                 <Source>.*DefaultSecurityRulesOperationsExtensions\.cs</Source>
+                <Source>.*NetworkManagementClient\.cs</Source>
                 <!-- Exclude items that are implemented via parent's API -->
                 <Source>.*NetworkInterfaceIPConfigurationsOperationsExtensions\.cs</Source>
                 <Source>.*RoutesOperationsExtensions\.cs</Source>
@@ -57,6 +58,10 @@ Included items must then not match any entries in the exclude list to remain inc
                 <Source>.*SubnetsOperationsExtensions\.cs</Source>
                 <Source>.*ExpressRouteConnectionsOperationsExtensions\.cs</Source>
                 <Source>.*ServiceEndpointPolicyDefinitionsOperationsExtensions\.cs</Source>
+                <Source>.*RouteFilterRulesOperationsExtensions\.cs</Source>
+                <Source>.*ExpressRouteCircuitConnectionsOperationsExtensions\.cs</Source>
+                <!-- Implementation not planned -->
+                <Source>.*AvailableResourceGroupDelegationsOperationsExtensions\.cs</Source>
               </Exclude>
             </Sources>
 
