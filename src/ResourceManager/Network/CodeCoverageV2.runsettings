@@ -73,6 +73,9 @@ Included items must then not match any entries in the exclude list to remain inc
                 <Function>.*Next.*</Function>
                 <Function>.*\.Models\..*Validate.*</Function>
                 <Function>.*UpdateTags.*</Function>
+                <Function>.*ListVirtualMachineScaleSetIpConfigurations.*</Function>
+                <Function>.*GetVirtualMachineScaleSetIpConfiguration.*</Function>
+                <Function>.*Microsoft\.Azure\.Management\.Network\.RouteFiltersOperationsExtensions\.Update.*</Function>
                 <!--Function>.*\.Models\..*\(\).*</Function>
                 <Function>.*VpnClientParameters\.VpnClientParameters\(\)</Function>
                 <Function>.*HTTPConfiguration\.HTTPConfiguration\(\)</Function>
