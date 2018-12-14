@@ -77,6 +77,8 @@ Included items must then not match any entries in the exclude list to remain inc
                 <Function>.*GetVirtualMachineScaleSetIpConfiguration.*</Function>
                 <!-- Not implemented, implementation not required -->
                 <Function>.*Microsoft\.Azure\.Management\.Network\.RouteFiltersOperationsExtensions\.Update.*</Function>
+                <Function>.*Microsoft\.Azure\.Management\.Network\.ServiceEndpointPoliciesOperationsExtensions\.Update.*</Function>
+                <Function>.*Microsoft\.Azure\.Management\.Network\.OperationsExtensions\.List.*</Function>
                 <!-- Implemented via parent -->
                 <Function>.*Microsoft\.Azure\.Management\.Network\.NetworkInterfaceTapConfigurationsOperationsExtensions\.List.*</Function>
                 <Function>.*Microsoft\.Azure\.Management\.Network\.VpnConnectionsOperationsExtensions\.CreateOrUpdate.*</Function>
