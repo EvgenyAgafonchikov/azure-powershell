@@ -2356,6 +2356,11 @@ function Test-LoadBalancerZones
     $rglocation = Get-ProviderLocation ResourceManagement
     $location = Get-ProviderLocation "Microsoft.Network/loadBalancers" "Central US"
 
+    if(Test-CanaryLocation $location)
+    {
+        return
+    }
+
     try
      {
       # Create the resource group

@@ -621,6 +621,8 @@ function Test-FlowLog
 	$workspaceName = Get-NrpResourceName
     $location = Get-ProviderLocation "Microsoft.Network/networkWatchers" "West Central US"
     $workspaceLocation = Get-ProviderLocation ResourceManagement "East US"
+    if(Test-CanaryLocation $workspaceLocation) { $workspaceLocation = "East US" }
+
 	$flowlogFormatType = "Json"
 	$flowlogFormatVersion = "1"	
 	$trafficAnalyticsInterval = 10;

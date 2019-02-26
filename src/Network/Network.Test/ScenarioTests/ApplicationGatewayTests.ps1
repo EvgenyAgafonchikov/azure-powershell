@@ -613,6 +613,8 @@ function Test-ApplicationGatewayCRUDRewriteRuleSet
 
 	$probeHttpName = Get-ResourceName
 
+	$zones = $(if(Test-CanaryLocation $location){ $null } else { @(1,2) })
+
 	try
 	{
 		# Create the resource group
@@ -660,7 +662,7 @@ function Test-ApplicationGatewayCRUDRewriteRuleSet
 		$sslPolicy = New-AzApplicationGatewaySslPolicy -PolicyType Custom -MinProtocolVersion TLSv1_1 -CipherSuite "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA", "TLS_RSA_WITH_AES_128_GCM_SHA256"
 
 		# Create Application Gateway
-		$appgw = New-AzApplicationGateway -Name $appgwName -ResourceGroupName $rgname -Zone 1,2 -Location $location -Probes $probeHttp -BackendAddressPools $pool -BackendHttpSettingsCollection $poolSetting01 -FrontendIpConfigurations $fipconfig -GatewayIpConfigurations $gipconfig -FrontendPorts $fp01 -HttpListeners $listener01 -RequestRoutingRules $rule01 -Sku $sku -SslPolicy $sslPolicy -TrustedRootCertificate $trustedRoot01 -AutoscaleConfiguration $autoscaleConfig -RewriteRuleSet $rewriteRuleSet
+		$appgw = New-AzApplicationGateway -Name $appgwName -ResourceGroupName $rgname -Zone $zones -Location $location -Probes $probeHttp -BackendAddressPools $pool -BackendHttpSettingsCollection $poolSetting01 -FrontendIpConfigurations $fipconfig -GatewayIpConfigurations $gipconfig -FrontendPorts $fp01 -HttpListeners $listener01 -RequestRoutingRules $rule01 -Sku $sku -SslPolicy $sslPolicy -TrustedRootCertificate $trustedRoot01 -AutoscaleConfiguration $autoscaleConfig -RewriteRuleSet $rewriteRuleSet
 
 		# Get Application Gateway
 		$getgw = Get-AzApplicationGateway -Name $appgwName -ResourceGroupName $rgname
@@ -695,7 +697,7 @@ function Test-ApplicationGatewayCRUDRewriteRuleSet
 		Assert-AreEqual $autoscaleConfig01.MinCapacity 3
 
 		# Get for zones
-		Assert-AreEqual $getgw.Zones.Count 2
+		Assert-AreEqual $getgw.Zones.Count $zones.Length
 
 		# Get for SslPolicy
 		$sslPolicy01 = Get-AzApplicationGatewaySslPolicy -ApplicationGateway $getgw
@@ -801,6 +803,8 @@ function Test-ApplicationGatewayCRUDRewriteRuleSetWithConditions
 
 	$probeHttpName = Get-ResourceName
 
+	$zones = $(if(Test-CanaryLocation $location){ $null } else { @(1,2) })
+
 	try
 	{
 		# Create the resource group
@@ -885,7 +889,7 @@ function Test-ApplicationGatewayCRUDRewriteRuleSetWithConditions
 		Assert-AreEqual $autoscaleConfig01.MinCapacity 3
 
 		# Get for zones
-		Assert-AreEqual $getgw.Zones.Count 2
+		Assert-AreEqual $getgw.Zones.Count $zones.Length
 
 		# Get for SslPolicy
 		$sslPolicy01 = Get-AzApplicationGatewaySslPolicy -ApplicationGateway $getgw
@@ -1041,7 +1045,7 @@ function Test-ApplicationGatewayCRUD3
 		$appgwIdentity = New-AzApplicationGatewayIdentity -UserAssignedIdentity $identity.Id
 
 		# Create Application Gateway
-		$appgw = New-AzApplicationGateway -Identity $appgwIdentity -Name $appgwName -ResourceGroupName $rgname -Zone 1,2 -Location $location -Probes $probeHttp -BackendAddressPools $pool -BackendHttpSettingsCollection $poolSetting01 -FrontendIpConfigurations $fipconfig -GatewayIpConfigurations $gipconfig -FrontendPorts $fp01 -HttpListeners $listener01 -RequestRoutingRules $rule01 -Sku $sku -SslPolicy $sslPolicy -TrustedRootCertificate $trustedRoot01 -AutoscaleConfiguration $autoscaleConfig
+		$appgw = New-AzApplicationGateway -Identity $appgwIdentity -Name $appgwName -ResourceGroupName $rgname -Zone $zones -Location $location -Probes $probeHttp -BackendAddressPools $pool -BackendHttpSettingsCollection $poolSetting01 -FrontendIpConfigurations $fipconfig -GatewayIpConfigurations $gipconfig -FrontendPorts $fp01 -HttpListeners $listener01 -RequestRoutingRules $rule01 -Sku $sku -SslPolicy $sslPolicy -TrustedRootCertificate $trustedRoot01 -AutoscaleConfiguration $autoscaleConfig
 
 		# Get Application Gateway
 		$getgw = Get-AzApplicationGateway -Name $appgwName -ResourceGroupName $rgname
