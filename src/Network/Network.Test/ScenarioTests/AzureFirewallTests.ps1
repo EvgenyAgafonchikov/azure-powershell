@@ -112,7 +112,7 @@ function Test-AzureFirewallCRUD
         Assert-AreEqual $rgName $getAzureFirewall.ResourceGroupName
         Assert-AreEqual $azureFirewallName $getAzureFirewall.Name
         Assert-NotNull $getAzureFirewall.Location
-        Assert-AreEqual (Normalize-Location $location) $getAzureFirewall.Location
+        Assert-AreEqual (Normalize-Location $location) (Normalize-Location $getAzureFirewall.Location)
         Assert-NotNull $getAzureFirewall.Etag
         Assert-AreEqual "Alert" $getAzureFirewall.ThreatIntelMode
         Assert-AreEqual 1 @($getAzureFirewall.IpConfigurations).Count
@@ -218,7 +218,7 @@ function Test-AzureFirewallCRUD
         Assert-AreEqual $rgName $getAzureFirewall.ResourceGroupName
         Assert-AreEqual $azureFirewallName $getAzureFirewall.Name
         Assert-NotNull $getAzureFirewall.Location
-        Assert-AreEqual $location $getAzureFirewall.Location
+        Assert-AreEqual (Normalize-Location $location) (Normalize-Location $getAzureFirewall.Location)
         Assert-NotNull $getAzureFirewall.Etag
 		Assert-AreEqual "Deny" $getAzureFirewall.ThreatIntelMode
 
@@ -412,7 +412,7 @@ function Test-AzureFirewallAllocateAndDeallocate
         Assert-AreEqual $rgName $getAzureFirewall.ResourceGroupName
         Assert-AreEqual $azureFirewallName $getAzureFirewall.Name
         Assert-NotNull $getAzureFirewall.Location
-        Assert-AreEqual $location $getAzureFirewall.Location
+        Assert-AreEqual (Normalize-Location $location) (Normalize-Location $getAzureFirewall.Location)
         Assert-NotNull $getAzureFirewall.Etag
         
         Assert-AreEqual 0 @($getAzureFirewall.IpConfigurations).Count
@@ -435,7 +435,7 @@ function Test-AzureFirewallAllocateAndDeallocate
         Assert-AreEqual $rgName $getAzureFirewall.ResourceGroupName
         Assert-AreEqual $azureFirewallName $getAzureFirewall.Name
         Assert-NotNull $getAzureFirewall.Location
-        Assert-AreEqual $location $getAzureFirewall.Location
+        Assert-AreEqual (Normalize-Location $location) (Normalize-Location $getAzureFirewall.Location)
         Assert-NotNull $getAzureFirewall.Etag
 
         # verify ip configuration
@@ -459,7 +459,7 @@ function Test-AzureFirewallAllocateAndDeallocate
         Assert-AreEqual $rgName $getAzureFirewall.ResourceGroupName
         Assert-AreEqual $azureFirewallName $getAzureFirewall.Name
         Assert-NotNull $getAzureFirewall.Location
-        Assert-AreEqual $location $getAzureFirewall.Location
+        Assert-AreEqual (Normalize-Location $location) (Normalize-Location $getAzureFirewall.Location)
         Assert-NotNull $getAzureFirewall.Etag
 
         # verify ip configuration
