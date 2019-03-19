@@ -291,12 +291,13 @@ function Test-CortexExpressRouteCRUD
     $rgName = Get-ResourceName
     # ExpressRoute gateways have been enabled only in westcentralus region
     $rglocation = Get-ProviderLocation "ResourceManagement" "westcentralus"
-
     $virtualWanName = Get-ResourceName
     $virtualHubName = Get-ResourceName
     $expressRouteGatewayName = Get-ResourceName
     $circuitName = Get-ResourceName
     $expressRouteConnectionName = Get-ResourceName
+    $peeringLocation = $(if(Test-CanaryLocation $rglocation) { "Taipei" } else { "Denver" })
+    $providerName = $(if(Test-CanaryLocation $rglocation) { "Chief Telecom" } else { "Zayo" })
 
     try
     {
@@ -342,7 +343,7 @@ function Test-CortexExpressRouteCRUD
 
         # Create the ExpressRouteCircuit with peering to which the connection needs to be established to
         $peering = New-AzureRmExpressRouteCircuitPeeringConfig -Name AzurePrivatePeering -PeeringType AzurePrivatePeering -PeerASN 100 -PrimaryPeerAddressPrefix "10.2.3.4/30" -SecondaryPeerAddressPrefix "11.2.3.4/30" -VlanId 22
-        $circuit = New-AzureRmExpressRouteCircuit -Name $circuitName -Location $rglocation -ResourceGroupName $rgname -SkuTier Premium -SkuFamily MeteredData  -ServiceProviderName "Zayo" -PeeringLocation "Denver" -BandwidthInMbps 200 -Peering $peering
+        $circuit = New-AzureRmExpressRouteCircuit -Name $circuitName -Location $rglocation -ResourceGroupName $rgname -SkuTier Premium -SkuFamily MeteredData  -ServiceProviderName $providerName -PeeringLocation $peeringLocation -BandwidthInMbps 200 -Peering $peering
         Write-Debug "Created ExpressRoute Circuit with Private Peering $circuitName successfully"
 
         # Get Express Route Circuit Resource
