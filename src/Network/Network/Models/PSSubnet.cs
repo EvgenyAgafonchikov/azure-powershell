@@ -28,7 +28,7 @@ namespace Microsoft.Azure.Commands.Network.Models
         public List<PSIPConfiguration> IpConfigurations { get; set; }
 
         [JsonProperty(Order = 1)]
-        public PSNatGateway NatGateway { get; set; }
+        public PSResourceId NatGateway { get; set; }
 
         [JsonProperty(Order = 1)]
         public List<PSServiceAssocationLink> ServiceAssociationLinks { get; set; }

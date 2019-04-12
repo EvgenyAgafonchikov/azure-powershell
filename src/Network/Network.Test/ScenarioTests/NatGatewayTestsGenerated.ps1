@@ -46,14 +46,14 @@ function Test-NatGatewayCRUDMinimalParameters
     $rgname = Get-ResourceGroupName;
     $rglocation = Get-ProviderLocation ResourceManagement;
     $rname = Get-ResourceName;
-    $location = Get-ProviderLocation "Microsoft.Network/natGateways";
+    $location = Get-ProviderLocation "Microsoft.Network/natGateways" "centraluseuap";
 
     try
     {
         $resourceGroup = New-AzResourceGroup -Name $rgname -Location $rglocation;
 
         # Create NatGateway
-        $vNatGateway = New-AzNatGateway -ResourceGroupName $rgname -Name $rname -Location $location;
+        $vNatGateway = New-AzNatGateway -ResourceGroupName $rgname -Name $rname -Location $location -Sku Standard;
         Assert-NotNull $vNatGateway;
         Assert-True { Check-CmdletReturnType "New-AzNatGateway" $vNatGateway };
         Assert-AreEqual $rname $vNatGateway.Name;
@@ -110,7 +110,7 @@ function Test-NatGatewayCRUDAllParameters
     $rgname = Get-ResourceGroupName;
     $rglocation = Get-ProviderLocation ResourceManagement;
     $rname = Get-ResourceName;
-    $location = Get-ProviderLocation "Microsoft.Network/natGateways";
+    $location = Get-ProviderLocation "Microsoft.Network/natGateways" "centraluseuap";
     # Resource's parameters
     $IdleTimeoutInMinutes = 5;
     $Tag = @{tag1='test'};
@@ -123,7 +123,7 @@ function Test-NatGatewayCRUDAllParameters
         $resourceGroup = New-AzResourceGroup -Name $rgname -Location $rglocation;
 
         # Create NatGateway
-        $vNatGateway = New-AzNatGateway -ResourceGroupName $rgname -Name $rname -Location $location -IdleTimeoutInMinutes $IdleTimeoutInMinutes -Tag $Tag;
+        $vNatGateway = New-AzNatGateway -ResourceGroupName $rgname -Name $rname -Location $location -IdleTimeoutInMinutes $IdleTimeoutInMinutes -Tag $Tag -Sku Standard;
         Assert-NotNull $vNatGateway;
         Assert-True { Check-CmdletReturnType "New-AzNatGateway" $vNatGateway };
         Assert-AreEqual $rname $vNatGateway.Name;
